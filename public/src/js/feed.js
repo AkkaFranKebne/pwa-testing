@@ -4,6 +4,19 @@ var closeCreatePostModalButton = document.querySelector('#close-create-post-moda
 
 function openCreatePostModal() {
   createPostArea.style.display = 'block';
+  if (defferedPrompt) {
+    // if add to homepage prompt can be shown
+    defferedPrompt.prompt(); // show it here
+    defferedPrompt.userChoice.then(function(result) {
+      console.log(result);
+      if (result.outcome === 'dismissed') {
+        console.log('nope');
+      } else {
+        console.log('yep');
+      }
+    });
+    defferedPrompt = null; // can be prompt only once
+  }
 }
 
 function closeCreatePostModal() {
