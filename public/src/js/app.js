@@ -88,3 +88,51 @@ fetch('https://httpbin.org/post', {
   .catch(function(error) {
     console.log(error);
   });
+
+// assignment
+
+// var button = document.querySelector('.enable-notifications');
+// console.log('button', button);
+// var output = document.querySelector('.mdl-navigation__link');
+// console.log('output', output);
+// button.addEventListener('click', function() {
+//   var promiseOnClick = new Promise(function(resolve) {
+//     console.log('promise on click started');
+//     setTimeout(function() {
+//       resolve('https://swapi.co/api/people/1');
+//     }, 3000);
+//   })
+//     .then(function(resolvedUrl) {
+//       fetch(resolvedUrl);
+//     })
+//     .then(function(response) {
+//       return response.json();
+//     })
+//     .then(function(data) {
+//       output.textContent = data.name;
+//     });
+// });
+// button.addEventListener('click', function() {
+//   var promiseOnClick2 = new Promise(function(resolve) {
+//     console.log('promise on click started');
+//     setTimeout(function() {
+//       resolve('https://httpbin.org/post');
+//     }, 3000);
+//   })
+//     .then(function(resolvedUrl) {
+//       fetch(resolvedUrl, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           Accept: 'application/json'
+//         },
+//         body: JSON.stringify({ message: 'This message was posted' })
+//       });
+//     })
+//     .then(function(response) {
+//       return response.json();
+//     })
+//     .then(function(data) {
+//       console.log(data.message);
+//     });
+// });
