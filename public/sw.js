@@ -7,5 +7,5 @@ self.addEventListener('activate', function(event) {
 });
 self.addEventListener('fetch', function(event) {
   console.info('SW fetch ', event.request);
-  event.respondWith(fetch(event.request));
+  event.respondWith(fetch(event.request)); // respondWith expects promise  //fetch api fetches http requests
 });
