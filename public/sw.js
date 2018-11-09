@@ -3,6 +3,7 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open('statics').then(function(cache) {
       cache.addAll([
+        // add take url, send request and check the response
         '/',
         '/index.html',
         '/src/js/app.js',
@@ -24,13 +25,25 @@ self.addEventListener('activate', function(event) {
   return self.clients.claim();
 });
 self.addEventListener('fetch', function(event) {
-  // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from web
+  // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from server
   event.respondWith(
     caches.match(event.request).then(function(response) {
       if (response) {
         return response;
       } else {
-        return fetch(event.request);
+        return (
+          fetch(event.request)
+            // and these that you fetch from server keep in cache as well
+            .then(function(responseFromServer) {
+              return caches.open('dynamic').then(function(cache) {
+                cache.put(event.request.url, responseFromServer.clone()); // put do not check response on its own, clone because response used here is consumed
+                return responseFromServer;
+              });
+            })
+            .catch(function(error) {
+              console.log(error);
+            })
+        );
       }
     })
   );
