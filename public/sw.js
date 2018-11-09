@@ -1,11 +1,37 @@
 self.addEventListener('install', function(event) {
-  console.info('SW install ', event);
+  // add static pages to cache using cache api
+  event.waitUntil(
+    caches.open('statics').then(function(cache) {
+      cache.addAll([
+        '/',
+        '/index.html',
+        '/src/js/app.js',
+        '/src/js/feed.js',
+        '/src/js/fetch.js',
+        '/src/js/promise.js',
+        '/src/js/material.min.js',
+        'src/css/app.css',
+        'src/css/feed.css',
+        'src/images/main-image.jpg',
+        'https://fonts.googleapis.com/css?family=Roboto:400,700',
+        'https://fonts.googleapis.com/icon?family=Material+Icons',
+        'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
+      ]);
+    })
+  );
 });
 self.addEventListener('activate', function(event) {
-  console.info('SW activate ', event);
   return self.clients.claim();
 });
 self.addEventListener('fetch', function(event) {
-  console.info('SW fetch ', event.request);
-  event.respondWith(fetch(event.request)); // respondWith expects promise  //fetch api fetches http requests
+  // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from web
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      if (response) {
+        return response;
+      } else {
+        return fetch(event.request);
+      }
+    })
+  );
 });
