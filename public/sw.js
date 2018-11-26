@@ -86,15 +86,15 @@ self.addEventListener('fetch', function(event) {
 // });
 
 //network first than cache strategy
-self.addEventListener('fetch', function(event) {
-  // on every fetch event check server, if server do not respond, check cache
-  event.respondWith(
-    fetch(event.request).catch(function(err) {
-      caches.match(event.request).then(function(response) {
-        if (response) {
-          return response;
-        }
-      });
-    })
-  );
-});
+// self.addEventListener('fetch', function(event) {
+//   // on every fetch event check server, if server do not respond, check cache
+//   event.respondWith(
+//     fetch(event.request).catch(function(err) {
+//       caches.match(event.request).then(function(response) {
+//         if (response) {
+//           return response;
+//         }
+//       });
+//     })
+//   );
+// });
