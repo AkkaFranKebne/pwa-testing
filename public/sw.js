@@ -1,5 +1,5 @@
-var CACHE_STATIC = 'static-v3';
-var CACHE_DYNAMIC = 'dynamic-v2';
+var CACHE_STATIC = 'static-v12';
+var CACHE_DYNAMIC = 'dynamic-v3';
 
 self.addEventListener('install', function(event) {
   // add static pages to cache using cache api
@@ -27,7 +27,7 @@ self.addEventListener('install', function(event) {
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     // do not procede return untill all this is done (outdated caches are removed)
-    cache.keys().then(function(keyList) {
+    caches.keys().then(function(keyList) {
       // take cache names and through the array of them
       return Promise.all(
         // wait for all promises that gona be return

@@ -30,6 +30,17 @@ shareImageButton.addEventListener('click', openCreatePostModal);
 
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
+// cache on demand example
+function onSaveButtonClik() {
+  console.log('button clicked');
+  if ('caches' in window) {
+    caches.open('on-demand-v1').then(function(cache) {
+      cache.add('https://httpbin.org/get');
+      cache.add('/src/images/sf-boat.jpg');
+    });
+  }
+}
+
 function createCard() {
   var cardWrapper = document.createElement('div');
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
@@ -48,6 +59,11 @@ function createCard() {
   cardSupportingText.className = 'mdl-card__supporting-text';
   cardSupportingText.textContent = 'In San Francisco';
   cardSupportingText.style.textAlign = 'center';
+  // button that triggers cache on demand example
+  // var saveButton = document.createElement('button');
+  // cardSupportingText.appendChild(saveButton);
+  // saveButton.textContent = 'save for later';
+  // saveButton.addEventListener('click', onSaveButtonClik);
   cardWrapper.appendChild(cardSupportingText);
   componentHandler.upgradeElement(cardWrapper);
   sharedMomentsArea.appendChild(cardWrapper);
