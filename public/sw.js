@@ -42,6 +42,7 @@ self.addEventListener('activate', function(event) {
   );
   return self.clients.claim();
 });
+//cache witch network fallback strategy
 self.addEventListener('fetch', function(event) {
   // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from server
   event.respondWith(
@@ -68,3 +69,12 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+
+// cache only strategy
+// self.addEventListener('fetch', function(event) {
+//   event.respondWith(
+//     caches.match(event.request).then(function(response) {
+//       return response;
+//     })
+//   );
+// });
