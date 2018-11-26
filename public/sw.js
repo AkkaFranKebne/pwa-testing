@@ -42,6 +42,7 @@ self.addEventListener('activate', function(event) {
   );
   return self.clients.claim();
 });
+
 //cache witch network fallback strategy
 self.addEventListener('fetch', function(event) {
   // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from server
@@ -83,3 +84,17 @@ self.addEventListener('fetch', function(event) {
 // self.addEventListener('fetch', function(event) {
 //   event.respondWith(fetch(event.request));
 // });
+
+//network first than cache strategy
+self.addEventListener('fetch', function(event) {
+  // on every fetch event check server, if server do not respond, check cache
+  event.respondWith(
+    fetch(event.request).catch(function(err) {
+      caches.match(event.request).then(function(response) {
+        if (response) {
+          return response;
+        }
+      });
+    })
+  );
+});
