@@ -1,7 +1,7 @@
 if (!window.Promise) {
   window.Promise = Promise; // from promise.js polyfill
 }
-
+// turns on service worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
     .register('/sw.js') // returns a promise

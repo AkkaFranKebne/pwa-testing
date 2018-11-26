@@ -1,7 +1,10 @@
+var CACHE_STATIC = 'static-v3';
+var CACHE_DYNAMIC = 'dynamic-v2';
+
 self.addEventListener('install', function(event) {
   // add static pages to cache using cache api
   event.waitUntil(
-    caches.open('statics').then(function(cache) {
+    caches.open(CACHE_STATIC).then(function(cache) {
       cache.addAll([
         // add take url, send request and check the response
         '/',
@@ -22,6 +25,20 @@ self.addEventListener('install', function(event) {
   );
 });
 self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    // do not procede return untill all this is done (outdated caches are removed)
+    cache.keys().then(function(keyList) {
+      // take cache names and through the array of them
+      return Promise.all(
+        // wait for all promises that gona be return
+        keyList.map(function(key) {
+          if (key !== CACHE_STATIC && key !== CACHE_DYNAMIC) {
+            return caches.delete(key); // remove outdated cache promise
+          }
+        })
+      );
+    })
+  );
   return self.clients.claim();
 });
 self.addEventListener('fetch', function(event) {
@@ -35,7 +52,7 @@ self.addEventListener('fetch', function(event) {
           fetch(event.request)
             // and these that you fetch from server keep in cache as well
             .then(function(responseFromServer) {
-              return caches.open('dynamic').then(function(cache) {
+              return caches.open(CACHE_DYNAMIC).then(function(cache) {
                 cache.put(event.request.url, responseFromServer.clone()); // put do not check response on its own, clone because response used here is consumed
                 return responseFromServer;
               });
