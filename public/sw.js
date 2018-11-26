@@ -1,4 +1,4 @@
-var CACHE_STATIC = 'static-v12';
+var CACHE_STATIC = 'static-v14';
 var CACHE_DYNAMIC = 'dynamic-v3';
 
 self.addEventListener('install', function(event) {
@@ -8,6 +8,7 @@ self.addEventListener('install', function(event) {
       cache.addAll([
         // add take url, send request and check the response
         '/',
+        '/offline.html',
         '/index.html',
         '/src/js/app.js',
         '/src/js/feed.js',
@@ -58,7 +59,9 @@ self.addEventListener('fetch', function(event) {
               });
             })
             .catch(function(error) {
-              console.log(error);
+              return caches.open(CACHE_STATIC).then(function(cache) {
+                return cache.match('/offline.html');
+              });
             })
         );
       }
