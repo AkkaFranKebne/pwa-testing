@@ -28,6 +28,16 @@ function isInArray(string, array) {
   return array.indexOf(cachePath) > -1;
 }
 
+function trimCache(cacheName, maxItems) {
+  caches.open(cacheName).then(function(cache) {
+    return cache.keys().then(function(keys) {
+      if (keys.length > maxItems) {
+        cache.delete(keys[0]).then(trimCache(cacheName, maxItems));
+      }
+    });
+  });
+}
+
 // static cache of apps shell strategy
 self.addEventListener('install', function(event) {
   // add static pages to cache using cache api
@@ -66,6 +76,9 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
       caches.open(CACHE_DYNAMIC).then(function(cache) {
         return fetch(event.request).then(function(response) {
+          // trim cache
+          trimCache(CACHE_DYNAMIC, 5);
+          // put new item to cache
           cache.put(event.request, response.clone());
           return response;
         });
