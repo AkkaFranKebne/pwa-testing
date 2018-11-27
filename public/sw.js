@@ -1,6 +1,7 @@
 var CACHE_STATIC = 'static-v14';
 var CACHE_DYNAMIC = 'dynamic-v3';
 
+// static cache of apps shell strategy
 self.addEventListener('install', function(event) {
   // add static pages to cache using cache api
   event.waitUntil(
@@ -25,6 +26,8 @@ self.addEventListener('install', function(event) {
     })
   );
 });
+
+// deleting the old cache
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     // do not procede return untill all this is done (outdated caches are removed)
@@ -43,7 +46,20 @@ self.addEventListener('activate', function(event) {
   return self.clients.claim();
 });
 
-//cache witch network fallback strategy
+//cache then network  update strategy  - part 2
+self.addEventListener('fetch', function(event) {
+  // on every fetch event save response in cache
+  event.respondWith(
+    caches.open(CACHE_DYNAMIC).then(function(cache) {
+      return fetch(event.request).then(function(response) {
+        cache.put(event.request, response.clone());
+        return response;
+      });
+    })
+  );
+});
+
+//cache with network fallback strategy
 self.addEventListener('fetch', function(event) {
   // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from server
   event.respondWith(

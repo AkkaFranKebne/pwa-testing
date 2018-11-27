@@ -31,15 +31,15 @@ shareImageButton.addEventListener('click', openCreatePostModal);
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
 // cache on demand example
-function onSaveButtonClik() {
-  console.log('button clicked');
-  if ('caches' in window) {
-    caches.open('on-demand-v1').then(function(cache) {
-      cache.add('https://httpbin.org/get');
-      cache.add('/src/images/sf-boat.jpg');
-    });
-  }
-}
+// function onSaveButtonClik() {
+//   console.log('button clicked');
+//   if ('caches' in window) {
+//     caches.open('on-demand-v1').then(function(cache) {
+//       cache.add('https://httpbin.org/get');
+//       cache.add('/src/images/sf-boat.jpg');
+//     });
+//   }
+// }
 
 function createCard() {
   var cardWrapper = document.createElement('div');
@@ -69,6 +69,12 @@ function createCard() {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
+function clearCards() {
+  while (sharedMomentsArea.hasChildNodes()) {
+    sharedMomentsArea.removeChild(sharedMomentsArea.lastChild);
+  }
+}
+
 fetch('https://httpbin.org/get')
   .then(function(res) {
     return res.json();
@@ -76,3 +82,35 @@ fetch('https://httpbin.org/get')
   .then(function(data) {
     createCard();
   });
+
+//cache then network  update strategy (to show faster from cache and then update from network) - part 1
+var url = 'https://httpbin.org/get';
+var dataUpdatedFromNetwork = false;
+
+// reach for file to the network
+fetch(url)
+  .then(function(result) {
+    return result.json();
+  })
+  .then(function(data) {
+    dataUpdatedFromNetwork = true;
+    clearCards();
+    createCard();
+  });
+
+// at the same time reach for file to cache
+if ('caches' in window) {
+  caches
+    .match(url)
+    .then(function(response) {
+      if (response) {
+        return response.json();
+      }
+    })
+    .then(function(data) {
+      if (!dataUpdatedFromNetwork) {
+        clearCards();
+        createCard();
+      }
+    });
+}
