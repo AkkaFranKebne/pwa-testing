@@ -114,3 +114,12 @@ if ('caches' in window) {
       }
     });
 }
+
+// unregister serwice worker example (removes cache as well)
+// if ('serviceWorker' in navigator) {
+//   navigator.serviceWorker.getRegistrations().then(function(registrations) {
+//     for (var i = 0; i < registrations.length; i++) {
+//       registrations[i].unregister();
+//     }
+//   });
+// }
