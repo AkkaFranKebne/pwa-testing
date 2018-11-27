@@ -77,7 +77,10 @@ self.addEventListener('fetch', function(event) {
               })
               .catch(function(error) {
                 return caches.open(CACHE_STATIC).then(function(cache) {
-                  return cache.match('/offline.html');
+                  // showing fallback offline page for a specific url
+                  if (event.request.url.indexOf('/help.html') > -1) {
+                    return cache.match('/offline.html');
+                  }
                 });
               })
           );
