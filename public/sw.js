@@ -16,6 +16,15 @@ var CACHE_STATIC_FILES = [
   'https://fonts.googleapis.com/icon?family=Material+Icons'
 ];
 
+function isInArray(string, array) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i] === string) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // static cache of apps shell strategy
 self.addEventListener('install', function(event) {
   // add static pages to cache using cache api
@@ -59,7 +68,7 @@ self.addEventListener('fetch', function(event) {
         });
       })
     );
-  } else if (new RegExp('\\b' + CACHE_STATIC_FILES.join('\\b|\\b') + '\\b').test(event.request.url)) {
+  } else if (isInArray(event.request.url, CACHE_STATIC_FILES)) {
     // use cache only for files which for sure are in static cache
     event.respondWith(
       caches.match(event.request).then(function(response) {
