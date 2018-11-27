@@ -1,5 +1,5 @@
-var CACHE_STATIC = 'static-v14';
-var CACHE_DYNAMIC = 'dynamic-v3';
+var CACHE_STATIC = 'static-v16';
+var CACHE_DYNAMIC = 'dynamic-v5';
 
 // static cache of apps shell strategy
 self.addEventListener('install', function(event) {
@@ -46,46 +46,74 @@ self.addEventListener('activate', function(event) {
   return self.clients.claim();
 });
 
-//cache then network  update strategy  - part 2
+//cache then network  update strategy  for a specific urls - part 2
 self.addEventListener('fetch', function(event) {
-  // on every fetch event save response in cache
-  event.respondWith(
-    caches.open(CACHE_DYNAMIC).then(function(cache) {
-      return fetch(event.request).then(function(response) {
-        cache.put(event.request, response.clone());
-        return response;
-      });
-    })
-  );
+  var url = 'https://httpbin.org/get';
+  if (event.request.url.indexOf(url) > -1) {
+    // on this fetch event save response in cache for this url
+    event.respondWith(
+      caches.open(CACHE_DYNAMIC).then(function(cache) {
+        return fetch(event.request).then(function(response) {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      })
+    );
+  } else {
+    // use cache with network fallback strategy
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
+        if (response) {
+          return response;
+        } else {
+          return (
+            fetch(event.request)
+              // and these that you fetch from server keep in cache as well
+              .then(function(responseFromServer) {
+                return caches.open(CACHE_DYNAMIC).then(function(cache) {
+                  cache.put(event.request.url, responseFromServer.clone()); // put do not check response on its own, clone because response used here is consumed
+                  return responseFromServer;
+                });
+              })
+              .catch(function(error) {
+                return caches.open(CACHE_STATIC).then(function(cache) {
+                  return cache.match('/offline.html');
+                });
+              })
+          );
+        }
+      })
+    );
+  }
 });
 
 //cache with network fallback strategy
-self.addEventListener('fetch', function(event) {
-  // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from server
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      if (response) {
-        return response;
-      } else {
-        return (
-          fetch(event.request)
-            // and these that you fetch from server keep in cache as well
-            .then(function(responseFromServer) {
-              return caches.open(CACHE_DYNAMIC).then(function(cache) {
-                cache.put(event.request.url, responseFromServer.clone()); // put do not check response on its own, clone because response used here is consumed
-                return responseFromServer;
-              });
-            })
-            .catch(function(error) {
-              return caches.open(CACHE_STATIC).then(function(cache) {
-                return cache.match('/offline.html');
-              });
-            })
-        );
-      }
-    })
-  );
-});
+// self.addEventListener('fetch', function(event) {
+//   // on every fetch event check if you have it in cache, if yes take from cache, if no, fetch from server
+//   event.respondWith(
+//     caches.match(event.request).then(function(response) {
+//       if (response) {
+//         return response;
+//       } else {
+//         return (
+//           fetch(event.request)
+//             // and these that you fetch from server keep in cache as well
+//             .then(function(responseFromServer) {
+//               return caches.open(CACHE_DYNAMIC).then(function(cache) {
+//                 cache.put(event.request.url, responseFromServer.clone()); // put do not check response on its own, clone because response used here is consumed
+//                 return responseFromServer;
+//               });
+//             })
+//             .catch(function(error) {
+//               return caches.open(CACHE_STATIC).then(function(cache) {
+//                 return cache.match('/offline.html');
+//               });
+//             })
+//         );
+//       }
+//     })
+//   );
+// });
 
 // cache only strategy
 // self.addEventListener('fetch', function(event) {

@@ -83,7 +83,7 @@ fetch('https://httpbin.org/get')
     createCard();
   });
 
-//cache then network  update strategy (to show faster from cache and then update from network) - part 1
+//cache then network  update strategy for a specific urls (to show faster from cache and then update from network) - part 1
 var url = 'https://httpbin.org/get';
 var dataUpdatedFromNetwork = false;
 
