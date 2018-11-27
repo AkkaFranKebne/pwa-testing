@@ -1,28 +1,28 @@
 var CACHE_STATIC = 'static-v16';
 var CACHE_DYNAMIC = 'dynamic-v5';
+var CACHE_STATIC_FILES = [
+  '/',
+  '/offline.html',
+  '/index.html',
+  '/src/js/app.js',
+  '/src/js/feed.js',
+  '/src/js/fetch.js',
+  '/src/js/promise.js',
+  '/src/js/material.min.js',
+  'src/css/app.css',
+  'src/css/feed.css',
+  'src/images/main-image.jpg',
+  'https://fonts.googleapis.com/css?family=Roboto:400,700',
+  'https://fonts.googleapis.com/icon?family=Material+Icons'
+];
 
 // static cache of apps shell strategy
 self.addEventListener('install', function(event) {
   // add static pages to cache using cache api
   event.waitUntil(
     caches.open(CACHE_STATIC).then(function(cache) {
-      cache.addAll([
-        // add take url, send request and check the response
-        '/',
-        '/offline.html',
-        '/index.html',
-        '/src/js/app.js',
-        '/src/js/feed.js',
-        '/src/js/fetch.js',
-        '/src/js/promise.js',
-        '/src/js/material.min.js',
-        'src/css/app.css',
-        'src/css/feed.css',
-        'src/images/main-image.jpg',
-        'https://fonts.googleapis.com/css?family=Roboto:400,700',
-        'https://fonts.googleapis.com/icon?family=Material+Icons',
-        'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
-      ]);
+      // add take url, send request and check the response
+      cache.addAll(CACHE_STATIC_FILES);
     })
   );
 });
@@ -59,6 +59,13 @@ self.addEventListener('fetch', function(event) {
         });
       })
     );
+  } else if (new RegExp('\\b' + CACHE_STATIC_FILES.join('\\b|\\b') + '\\b').test(event.request.url)) {
+    // use cache only for files which for sure are in static cache
+    event.respondWith(
+      caches.match(event.request).then(function(response) {
+        return response;
+      })
+    );
   } else {
     // use cache with network fallback strategy
     event.respondWith(
@@ -78,7 +85,7 @@ self.addEventListener('fetch', function(event) {
               .catch(function(error) {
                 return caches.open(CACHE_STATIC).then(function(cache) {
                   // showing fallback offline page for a specific url
-                  if (event.request.url.indexOf('/help.html') > -1) {
+                  if (event.request.url.indexOf('/help') > -1) {
                     return cache.match('/offline.html');
                   }
                 });
